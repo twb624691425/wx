@@ -4,4 +4,6 @@ import com.tang.wx.db.pojo.TbUser;
 
 public interface UserService {
     public int saveUser(TbUser user);
+
+    public void testException();
 }
