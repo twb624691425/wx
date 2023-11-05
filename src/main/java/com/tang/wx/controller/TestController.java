@@ -24,11 +24,6 @@ public class TestController {
     public Object res() {
         return Res.ok();
     }
-    @PostMapping("/saveUser")
-    public Object saveUser(@RequestBody TbUser user) {
-        userService.saveUser(user);
-        return Res.ok();
-    }
 
     @GetMapping("/swagger")
     @ApiOperation("最简单的测试方法")

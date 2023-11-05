@@ -73,4 +73,11 @@ class WxApplicationTests {
         }
     }
 
+    @Test
+    void testString() {
+        HashMap map = new HashMap();
+        map.put("key", "hello");
+        System.out.println(map.get("key") == "hello");
+    }
+
 }

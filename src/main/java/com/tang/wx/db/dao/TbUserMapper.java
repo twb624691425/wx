@@ -3,6 +3,8 @@ package com.tang.wx.db.dao;
 import com.tang.wx.db.pojo.TbUser;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.HashMap;
+
 /**
 * @author Administrator
 * @description 针对表【tb_user(用户表)】的数据库操作Mapper
@@ -11,17 +13,9 @@ import org.apache.ibatis.annotations.Mapper;
 */
 @Mapper
 public interface TbUserMapper {
+    public boolean hasRootUser();
 
-    int deleteByPrimaryKey(Long id);
+    public int insertUser(HashMap hashMap);
 
-    int insert(TbUser record);
-
-    int insertSelective(TbUser record);
-
-    TbUser selectByPrimaryKey(Long id);
-
-    int updateByPrimaryKeySelective(TbUser record);
-
-    int updateByPrimaryKey(TbUser record);
-
+    public Integer increaseId();
 }

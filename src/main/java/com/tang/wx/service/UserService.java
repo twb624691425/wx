@@ -1,9 +1,13 @@
 package com.tang.wx.service;
 
 import com.tang.wx.db.pojo.TbUser;
+import com.tang.wx.utils.Res;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public interface UserService {
-    public int saveUser(TbUser user);
+    public Res registry(HashMap map);
 
     public void testException();
 }
