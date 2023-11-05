@@ -9,5 +9,7 @@ import java.util.Map;
 public interface UserService {
     public Res registry(HashMap map);
 
+    public Res getUserInfo(int id);
+
     public void testException();
 }

@@ -4,6 +4,7 @@ import com.tang.wx.db.pojo.TbUser;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;
+import java.util.Set;
 
 /**
 * @author Administrator
@@ -18,4 +19,6 @@ public interface TbUserMapper {
     public int insertUser(HashMap hashMap);
 
     public Integer increaseId();
+
+    public Set<String> getUserPermission(int id);
 }

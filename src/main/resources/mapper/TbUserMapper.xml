@@ -11,6 +11,16 @@
         select MAX(id) from tb_user
     </select>
 
+    <select id="getUserPermission" parameterType="java.lang.Integer" resultType="java.lang.String">
+        select distinct p.permission_name
+        from tb_permission p
+        join tb_role r
+        on json_contains(r.permissions, cast(p.id as char))
+        join tb_user u
+        on json_contains(u.role, cast(r.id as char))
+        where u.id = #{id}
+    </select>
+
     <insert id="insertUser" parameterType="hashmap">
         insert into tb_user
             <trim prefix="(" suffix=")" suffixOverrides=",">

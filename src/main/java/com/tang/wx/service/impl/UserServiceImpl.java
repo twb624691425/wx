@@ -8,10 +8,7 @@ import com.tang.wx.utils.Res;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Component
 public class UserServiceImpl implements UserService {
@@ -37,6 +34,12 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public Res getUserInfo(int id) {
+        Set<String> permissions = tbUserMapper.getUserPermission(id);
+        return Res.ok().put("data", permissions);
+    }
+
     public void testException() {
        throw new CustomException("手动mock的异常");
     }
@@ -50,5 +53,6 @@ public class UserServiceImpl implements UserService {
     public int insertUser(HashMap map) {
         return tbUserMapper.insertUser(map);
     }
+
 
 }
