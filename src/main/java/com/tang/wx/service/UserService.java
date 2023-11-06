@@ -11,5 +11,9 @@ public interface UserService {
 
     public Res getUserInfo(int id);
 
+    public Res login(String nickname, String openId);
+
+    public TbUser selectById(int id);
+
     public void testException();
 }

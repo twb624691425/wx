@@ -52,4 +52,4 @@ custom:
   swaggerTitle: "在线办公系统"
   jwt:
     secrect: asdx#2s@dpx
-    timeout: 1800000
+    timeout: 1800

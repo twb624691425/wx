@@ -3,6 +3,24 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.tang.wx.db.dao.TbUserMapper">
+    <sql id="userColumn">
+         `id`, open_id, nickname, photo, `name`, sex, tel, email, hiredate, `role`, root, dept_id, `status`, create_time
+    </sql>
+    <!--假设就用nickname 和open_id 登录-->
+    <select id="selectByLogin" parameterType="hashmap" resultType="com.tang.wx.db.pojo.TbUser">
+        select
+            <include refid="userColumn" />
+        from tb_user
+        where nickname = #{nickname} and open_id = #{openId}
+    </select>
+
+    <select id="selectById" parameterType="java.lang.Integer" resultType="com.tang.wx.db.pojo.TbUser" >
+        select
+        <include refid="userColumn" />
+        from tb_user
+        where id = #{id}
+    </select>
+
     <select id="hasRootUser" resultType="java.lang.Boolean">
         select if(count(1), true, false) from tb_user where root = 1
     </select>

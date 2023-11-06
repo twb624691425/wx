@@ -1,7 +1,11 @@
 package com.tang.wx.config.shiro;
 
+import com.alibaba.druid.support.json.JSONUtils;
+import com.alibaba.druid.support.json.JSONWriter;
 import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.tang.wx.utils.CustomException;
 import com.tang.wx.utils.JwtUtil;
+import com.tang.wx.utils.Res;
 import org.apache.http.HttpStatus;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -13,6 +17,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
+import springfox.documentation.spring.web.json.Json;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -21,19 +26,21 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @Scope("prototype")
 public class OAuth2Filter extends AuthenticatingFilter {
-
-    @Value("${custom.jwt.timeout}")
-    private long timeout;
 
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Value("${custom.jwt.timeout}")
+    private long timeout;
 
     @Override
     protected AuthenticationToken createToken(ServletRequest servletRequest, ServletResponse servletResponse) throws Exception {
@@ -60,14 +67,16 @@ public class OAuth2Filter extends AuthenticatingFilter {
     protected boolean onAccessDenied(ServletRequest servletRequest, ServletResponse servletResponse) throws Exception {
         HttpServletRequest req = (HttpServletRequest) servletRequest;
         HttpServletResponse resp = (HttpServletResponse) servletResponse;
-        resp.setHeader("Content-Type", "text/html;charset=UTF-8");
+        resp.setHeader("Content-Type", "application/json;charset=UTF-8");
         resp.setHeader("Access-Control-Allow-Credentials", "true");
         resp.setHeader("Access-Control-Allow-Origin", "*");
 
         String token = req.getHeader("token");
         if (token == null || "".equals(token)) {
-            resp.setStatus(HttpStatus.SC_UNAUTHORIZED);
-            resp.getWriter().print("未获取授权凭证");
+            HashMap<String, Object> map = Res.error(HttpStatus.SC_UNAUTHORIZED, "未获取授权凭证");
+            String res = JSONUtils.toJSONString(map);
+            resp.setStatus(HttpStatus.SC_OK);
+            resp.getWriter().print(res);
             return false;
         }
         try {
@@ -75,17 +84,31 @@ public class OAuth2Filter extends AuthenticatingFilter {
             int userId = jwtUtil.getUserId(token);
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             String tokenFromRedis = valueOperations.get("token-" + userId);
-            if (tokenFromRedis == null || "".equals(tokenFromRedis) || tokenFromRedis != token) {
-                resp.setStatus(HttpStatus.SC_UNAUTHORIZED);
-                resp.getWriter().print("令牌不存在或已失效，请重新获取令牌");
+            if (tokenFromRedis == null || "".equals(tokenFromRedis) || !tokenFromRedis.equals(token)) {
+                HashMap<String, Object> map = Res.error(HttpStatus.SC_UNAUTHORIZED, "令牌不存在或已失效，请重新获取令牌");
+                String res = JSONUtils.toJSONString(map);
+                resp.setStatus(HttpStatus.SC_OK);
+                resp.getWriter().print(res);
+//                resp.setStatus(HttpStatus.SC_UNAUTHORIZED);
+//                resp.getWriter().print("令牌不存在或已失效，请重新获取令牌");
                 return false;
+            } else {
+                redisTemplate.expire("token-" + userId, this.timeout, TimeUnit.SECONDS);
             }
-        } catch (JWTDecodeException e) {
-            resp.setStatus(HttpStatus.SC_UNAUTHORIZED);
-            resp.getWriter().print("无效的令牌");
+        } catch (Exception e) {
+            resp.setStatus(HttpStatus.SC_OK);
+            if (e instanceof JWTDecodeException) {
+                HashMap<String, Object> map = Res.error(HttpStatus.SC_UNAUTHORIZED, "令牌解析错误，存在被篡改可能性");
+                String res = JSONUtils.toJSONString(map);
+                resp.getWriter().print(res);
+            } else {
+                e.printStackTrace();
+                HashMap<String, Object> map = Res.error(HttpStatus.SC_UNAUTHORIZED, "无效的令牌");
+                String res = JSONUtils.toJSONString(map);
+                resp.getWriter().print(res);
+            }
             return false;
         }
-
         return executeLogin(servletRequest, servletResponse);
     }
 

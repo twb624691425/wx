@@ -42,6 +42,21 @@ public class SwaggerConfig {
         docket = apiSelectorBuilder.build();
 
         // 开启对JWT的支持
+        List<ApiKey> apiKeys = new ArrayList<>();
+        // 规定用户需要输入什么参数
+        apiKeys.add(new ApiKey("token", "token", "header"));
+        docket.securitySchemes(apiKeys);
+
+        AuthorizationScope scope = new AuthorizationScope("global", "accessEverything");
+        AuthorizationScope[] scopeArray = {scope};
+
+        SecurityReference reference = new SecurityReference("token", scopeArray);
+        List<SecurityReference> refList = new ArrayList<>();
+        refList.add(reference);
+        SecurityContext context  =SecurityContext.builder().securityReferences(refList).build();
+        List<SecurityContext> ctxList = new ArrayList<>();
+        ctxList.add(context);
+        docket.securityContexts(ctxList);
 
         return docket;
     }

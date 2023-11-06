@@ -21,4 +21,8 @@ public interface TbUserMapper {
     public Integer increaseId();
 
     public Set<String> getUserPermission(int id);
+
+    public TbUser selectByLogin(String nickname, String openId);
+
+    public TbUser selectById(int id);
 }

@@ -24,12 +24,12 @@ class WxApplicationTests {
     void testRedisBase() {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         // 赋值取值
-        valueOperations.set("token", "123456", 30, TimeUnit.SECONDS);
-        String token = valueOperations.get("token");
-        System.out.println("token = " + token);
-        // 设置时间
-        redisTemplate.expire("token", 300, TimeUnit.SECONDS);
-        long timeout = redisTemplate.getExpire("token");
+//        valueOperations.set("token", "123456", 30, TimeUnit.SECONDS);
+//        String token = valueOperations.get("token");
+//        System.out.println("token = " + token);
+//        // 设置时间
+        redisTemplate.expire("token-1", 1800, TimeUnit.SECONDS);
+        long timeout = redisTemplate.getExpire("token-1");
         System.out.println("timeout = " + timeout);
     }
 
