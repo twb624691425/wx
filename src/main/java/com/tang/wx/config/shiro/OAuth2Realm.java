@@ -11,6 +11,8 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
+
 @Component
 public class OAuth2Realm extends AuthorizingRealm {
     @Autowired
@@ -26,7 +28,11 @@ public class OAuth2Realm extends AuthorizingRealm {
     // 授权
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
+        TbUser user = (TbUser) principalCollection.getPrimaryPrincipal();
+        Set<String> permissions = userService.getUserPermission(user.getId());
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+        System.out.println("permissions = " + permissions);
+        info.setStringPermissions(permissions);
         return info;
     }
 

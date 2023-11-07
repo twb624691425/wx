@@ -97,5 +97,9 @@ public class UserServiceImpl implements UserService {
         return tbUserMapper.insertUser(map);
     }
 
+    public Set<String> getUserPermission(int id) {
+        return tbUserMapper.getUserPermission(id);
+    }
+
 
 }

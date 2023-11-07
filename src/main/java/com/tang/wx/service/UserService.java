@@ -5,6 +5,7 @@ import com.tang.wx.utils.Res;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public interface UserService {
     public Res registry(HashMap map);
@@ -14,6 +15,8 @@ public interface UserService {
     public Res login(String nickname, String openId);
 
     public TbUser selectById(int id);
+
+    public Set<String> getUserPermission(int id);
 
     public void testException();
 }
